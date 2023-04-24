@@ -1,7 +1,7 @@
 from wall import Wall
 
 class Player:
-    def __init__(self, id, r, c, image, color):
+    def __init__(self, id, r, c, goal, image, color):
         self.id = id 
         self.r = r
         self.c = c
@@ -9,6 +9,8 @@ class Player:
         self.walls = []
         self.image = image
         self.color = color
+        self.goal = goal
+        self.done = False
 
     def place_wall(self, walls):
         self.walls.append(walls)
