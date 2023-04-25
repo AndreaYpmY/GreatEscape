@@ -15,7 +15,7 @@ class Player:
     def place_wall(self, walls):
         self.walls.append(walls)
 
-    def generate_wall(r,c,o):
+    def generate_wall(self,r,c,o):
         wall1 = Wall(r,c,o)
         if(o == 0):
             wall2 = Wall(r,c+1,o)

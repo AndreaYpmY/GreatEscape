@@ -4,6 +4,7 @@
 import pygame
 import os
 from time import sleep
+from random import randint
 
 # Classes
 from game import Game
@@ -67,27 +68,63 @@ def draw_board(game):
                 pygame.draw.rect(WIN, player.color, (CELL_SIZE*wall[0].cell1[1]+WALL_WIDTH*(wall[0].cell1[1]-2)+BOARD_PADDING//2, CELL_SIZE*wall[0].cell1[0]+WALL_WIDTH*(wall[0].cell1[0]-1)+BOARD_PADDING//2, WALL_WIDTH, CELL_SIZE*2+WALL_WIDTH))
 
 # TODO: FUNZIONE DI PROVA (DA RIMUOVERE GRZ)
-def handle_movement(game, keys_pressed):
+def handle_play(game, keys_pressed):
     player = game.current_player
 
+    is_movement = True
     current_pos = (player.r, player.c)
     next_pos = (player.r, player.c)
+    wall = ()
 
-    if(keys_pressed[pygame.K_UP]):
-        next_pos = (player.r-1, player.c)
-    elif(keys_pressed[pygame.K_DOWN]):
-        next_pos = (player.r+1, player.c)
-    elif(keys_pressed[pygame.K_LEFT]):
-        next_pos = (player.r, player.c-1)
-    elif(keys_pressed[pygame.K_RIGHT]):
-        next_pos = (player.r, player.c+1)
-
-    if game.valid_move(current_pos, next_pos):               # If no walls are traspassed
-        player.new_position(next_pos[0], next_pos[1])
-        game.switch_player()
+    choose = input("Vuoi muoverti o piazzare un muro? (1/2)")
+    if choose == "1":
+        if(keys_pressed[pygame.K_UP]):
+            next_pos = (player.r-1, player.c)
+        elif(keys_pressed[pygame.K_DOWN]):
+            next_pos = (player.r+1, player.c)
+        elif(keys_pressed[pygame.K_LEFT]):
+            next_pos = (player.r, player.c-1)
+        elif(keys_pressed[pygame.K_RIGHT]):
+            next_pos = (player.r, player.c+1)
     else:
-        print(f"{game.current_player.id} è stato squalificato (mossa illegale)")
-        
+        muro = input("Vuoi inserire le coordinate o vuoi un muro random? (1/2)")
+        if(muro == "1"):
+            row = int(input("Row: "))
+            col = int(input("Col: "))
+            orientation = int(input("Orientation: "))
+            wall = player.generate_wall(row,col,orientation)
+        else:
+            wall = get_random_wall(player)
+        is_movement = False                 # I'm going to place a wall
+            
+
+
+    if is_movement:
+        if game.valid_movement(current_pos, next_pos):               # If no walls are traspassed
+            player.new_position(next_pos[0], next_pos[1])
+            sleep(0.3)
+            game.switch_player()
+        else:
+            print(f"{game.current_player.id} è stato squalificato (mossa illegale)")
+    else:
+        if game.valid_wall(wall):
+            player.place_wall(wall)
+            game.switch_player()
+
+
+def get_random_wall(player):
+    orientation = randint(0,1)  
+    row = 0
+    col = 0
+    if orientation == 0:
+        row = randint(1,8)
+        col = randint(0,7)
+    else:
+        row = randint(0,7)
+        col = randint(1,8)
+    
+    return player.generate_wall(row,col,orientation)
+             
 
 def main():
     run = True
@@ -100,7 +137,7 @@ def main():
 
         keys_pressed = pygame.key.get_pressed()
         if (True in keys_pressed):
-            handle_movement(game, keys_pressed)
+            handle_play(game, keys_pressed)
     
         game.check_goal()
         draw_window(game)
