@@ -57,30 +57,35 @@ class Game:
                 if (new_wall[1].cell1 == wall[1].cell1) or (new_wall[1].cell1 == wall[0].cell1 and new_wall[1].orientation == wall[0].orientation) or (new_wall[0].cell1 == wall[1].cell1 and new_wall[1].orientation == wall[0].orientation) or (new_wall[0].cell1 == wall[0].cell1 and new_wall[0].orientation == wall[1].orientation):
                     print(f"Il tuo muro non è valido per il posizionamento")
                     return False
-            if not self.can_reach_goal(player.r, player.c, new_wall):
+            if not self.can_reach_goal(player, new_wall):
                 print(f"Il tuo muro non è valido perchè blocca il passaggio")	
                 return False
         return True
 
-    def can_reach_goal(self, r, c, wall):
+    def can_reach_goal(self, player, wall):
+        
+        '''
+        r = player.r
+        c = player.c
         # crea una lista di tutti i muri sul tavolo di gioco
         board_walls = []
-        for player in self.players:
-            for wall in player.walls:
-                board_walls.append(wall[0])
-                board_walls.append(wall[1])
+        for p in self.players:
+            for w in p.walls:
+                board_walls.append(w[0])
+                board_walls.append(w[1])
 
         # aggiunge i muri dati in input alla lista
         board_walls.append(wall[0])
         board_walls.append(wall[1])
+
+        print(f"Sto provando ad aggiungere il muro ({wall[0].cell1},{wall[0].cell2};{wall[1].cell1},{wall[1].cell2})")
 
         # verifica se esiste un percorso tra il giocatore e la sua meta che non attraversa alcun muro
         visited = [[False for i in range(9)] for j in range(9)]
         q = [(r, c)]
         while q:
             curr_r, curr_c = q.pop(0)
-            print(f"curr_r: {curr_r}, curr_c: {curr_c}")
-            if self.__is_goal__(curr_r, curr_c):
+            if self.__is_goal__(player, curr_r, curr_c):
                 return True
             for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
                 next_r, next_c = curr_r + dr, curr_c + dc
@@ -100,6 +105,7 @@ class Game:
                         visited[next_r][next_c] = True
                         q.append((next_r, next_c))      
         return False
+        '''
 
     def switch_player(self):
         self.current_player = self.players[self.turn%PLAYERS_NUM]
@@ -111,8 +117,7 @@ class Game:
                 player.done = True
                 print(f"{player.id} ha finito")
 
-    def __is_goal__(self,r,c):
-        player = self.current_player
+    def __is_goal__(self,player,r,c):
         if (player.goal == 'N' and r == 0) or (player.goal == 'S' and r == 8) or (player.goal == 'W' and c == 0) or (player.goal == "E" and c == 8):
             return True
         return False
