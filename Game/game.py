@@ -52,7 +52,17 @@ class Game:
                     return False
         return True
     
+    def __is_out_of_board__(self, wall):
+        if wall[0].orientation == 0:
+            return wall[0].cell2[0] < 0 or wall[0].cell1[0] > 8 or wall[1].cell1[1] > 8 or wall[1].cell1[1] < 0
+        else:
+            return wall[0].cell2[1] < 0 or wall[0].cell1[1] > 8 or wall[1].cell1[0] > 8 or wall[1].cell1[0] < 0
+
     def valid_wall(self,new_wall):
+        # Return false if the wall goes out of the board
+        if self.__is_out_of_board__(new_wall):
+            print("Muro fuori dalla scacchiera") 
+            return False
         for player in self.players:
             for wall in player.walls:
                 if (new_wall[1].cell1 == wall[1].cell1) or (new_wall[1].cell1 == wall[0].cell1 and new_wall[1].orientation == wall[0].orientation) or (new_wall[0].cell1 == wall[1].cell1 and new_wall[1].orientation == wall[0].orientation) or (new_wall[0].cell1 == wall[0].cell1 and new_wall[0].orientation == wall[1].orientation):
@@ -105,5 +115,3 @@ class Game:
         if (player.goal == 'N' and r == 0) or (player.goal == 'S' and r == 8) or (player.goal == 'W' and c == 0) or (player.goal == "E" and c == 8):
             return True
         return False
-
-
