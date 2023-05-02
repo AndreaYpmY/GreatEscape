@@ -4,6 +4,7 @@ from random import choice, randint
 
 TURN_LIMIT = 100
 PLAYERS_NUM = 2              # Only two players (for now)
+BOARD_DIM = 9
 
 class Game:
     def __init__(self, pawns):
@@ -62,50 +63,33 @@ class Game:
                 return False
         return True
 
+    def __crosses_new_wall__(self, curr, next, wall):
+        return (wall[0].cell1 == curr and wall[0].cell2 == next) or (wall[0].cell2 == curr and wall[0].cell1 == next) or (wall[1].cell1 == curr and wall[1].cell2 == next) or (wall[1].cell2 == curr and wall[1].cell1 == next)
+
     def can_reach_goal(self, player, wall):
+        queue = []
+        visited = [[False for _ in range(BOARD_DIM)] for _ in range(BOARD_DIM)]
+        queue.append((player.r, player.c))
+        visited[player.r][player.c] = True
         
-        '''
-        r = player.r
-        c = player.c
-        # crea una lista di tutti i muri sul tavolo di gioco
-        board_walls = []
-        for p in self.players:
-            for w in p.walls:
-                board_walls.append(w[0])
-                board_walls.append(w[1])
-
-        # aggiunge i muri dati in input alla lista
-        board_walls.append(wall[0])
-        board_walls.append(wall[1])
-
-        print(f"Sto provando ad aggiungere il muro ({wall[0].cell1},{wall[0].cell2};{wall[1].cell1},{wall[1].cell2})")
-
-        # verifica se esiste un percorso tra il giocatore e la sua meta che non attraversa alcun muro
-        visited = [[False for i in range(9)] for j in range(9)]
-        q = [(r, c)]
-        while q:
-            curr_r, curr_c = q.pop(0)
-            if self.__is_goal__(player, curr_r, curr_c):
+        while not len(queue)==0:
+            r, c = queue.pop(0)
+            if self.__is_goal__(player, r, c):
                 return True
-            for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-                next_r, next_c = curr_r + dr, curr_c + dc
-                if 0 <= next_r < 9 and 0 <= next_c < 9 and not visited[next_r][next_c]:
-                    # controlla se la cella successiva non è occupata da un muro
-                    blocked = False
-                    for wall in board_walls:
-                        if wall.orientation == 0:
-                            if wall.cell1[0] == min(curr_r, next_r) and wall.cell1[1] == curr_c and wall.cell2[1] == curr_c:
-                                blocked = True
-                                break
-                        else:
-                            if wall.cell1[1] == min(curr_c, next_c) and wall.cell1[0] == curr_r and wall.cell2[0] == curr_r:
-                                blocked = True
-                                break
-                    if not blocked:
-                        visited[next_r][next_c] = True
-                        q.append((next_r, next_c))      
+            if r > 0 and not visited[r-1][c] and self.valid_movement((r, c), (r-1, c)) and not self.__crosses_new_wall__((r, c), (r-1, c), wall):
+                queue.append((r-1, c))
+                visited[r-1][c] = True
+            if r < BOARD_DIM-1 and not visited[r+1][c] and self.valid_movement((r, c), (r+1, c)) and not self.__crosses_new_wall__((r, c), (r+1, c), wall):
+                queue.append((r+1, c))
+                visited[r+1][c] = True
+            if c > 0 and not visited[r][c-1] and self.valid_movement((r, c), (r, c-1)) and not self.__crosses_new_wall__((r, c), (r, c-1), wall):
+                queue.append((r, c-1))
+                visited[r][c-1] = True
+            if c < BOARD_DIM-1 and not visited[r][c+1] and self.valid_movement((r, c), (r, c+1)) and not self.__crosses_new_wall__((r, c), (r, c+1), wall):
+                queue.append((r, c+1))
+                visited[r][c+1] = True
+            print(f"Queue: {queue}")
         return False
-        '''
 
     def switch_player(self):
         self.current_player = self.players[self.turn%PLAYERS_NUM]
