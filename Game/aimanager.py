@@ -42,7 +42,9 @@ class AIManager():
             self.input_fixed_program.add_program(line)
 
     def prepare_programs_for_turn(self, players, asp_path):
-        #self.fill_fixed_program(asp_path)
+        # self.input_fixed_program.clear_all()
+        # self.fill_fixed_program(asp_path)
+        self.input_variable_program.clear_all()
         self.input_variable_program.add_objects_input(players)
 
         for player in players:
