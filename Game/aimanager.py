@@ -8,14 +8,13 @@ from languages.asp.symbolic_constant import SymbolicConstant
 # Our classes
 from player import Player
 from wall import Wall
+import platform
 
 class AIManager():
     def __init__(self):
         try:
             # TODO: Gestire per ogni OS, ricordarsi che ogni OS gestisce gli slash in modo diverso
-            self.handler = DesktopHandler(DLV2DesktopService("executables/./dlv-2.1.1-linux-x86_64"))        # Linux handler
-            # handler = DesktopHandler(DLV2DesktopService("executables\dlv-2.1.1-win64.exe"))             # Windows handler
-            # handler = DesktopHandler(DLV2DesktopService("executables/./dlv-2.1.1-macos-12.2"))          # MacOS handler 
+            self.__prepare_handler__()
 
             self.input_fixed_program, self.input_variable_program = ASPInputProgram(), ASPInputProgram()
 
@@ -33,7 +32,8 @@ class AIManager():
 
     # TODO: Aggiungere nomi files quando saranno creati
     def fill_fixed_program(self,asp_path):
-        f = Open(asp_path, "r")
+        f = open(asp_path, "r")
+
         for line in f:
             # Doesn't add comments and empty lines to the program
             # TODO: Controllare se il ritorno a capo funzioni con tutti i sistemi operativi
@@ -58,4 +58,15 @@ class AIManager():
         print("Variable program:")
         print(self.input_variable_program.get_programs())
         
-        
+
+    def __prepare_handler__(self):
+        self.os = platform.system()
+
+        if self.os == "Windows":    # Windows
+            self.handler = DesktopHandler(DLV2DesktopService("executables\dlv-2.1.1-win64.exe")) 
+        elif self.os == "Linux":    # Linux
+            self.handler = DesktopHandler(DLV2DesktopService("executables/./dlv-2.1.1-linux-x86_64"))
+        elif self.os == "Darwin":    # MacOS
+            self.handler = DesktopHandler(DLV2DesktopService("executables/./dlv-2.1.1-macos-12.2"))
+        else:
+            raise Exception("OS not supported")
