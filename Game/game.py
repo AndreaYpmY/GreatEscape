@@ -1,5 +1,7 @@
+from aimanager import AIManager
 from player import Player
 from wall import Wall
+
 from random import choice, randint
 
 TURN_LIMIT = 100
@@ -11,6 +13,7 @@ class Game:
         self.turn = 0
         self.players = []
         self.create_players(pawns)
+        self.ai_manager = AIManager()
         self.switch_player()
         
         self.matrix = [[0 for i in range(9)] for j in range(9)]
@@ -21,6 +24,8 @@ class Game:
         self.players[1].walls.append((Wall(2,2,0), Wall(2,3,0)))
         print(f"Red player goal: {self.players[0].goal}")
         print(f"Green player goal: {self.players[1].goal}")
+
+        
 
     def create_players(self,pawns):
         goals = ['N', 'S', 'W', 'E']
@@ -98,12 +103,13 @@ class Game:
             if c < BOARD_DIM-1 and not visited[r][c+1] and self.valid_movement((r, c), (r, c+1)) and not self.__crosses_new_wall__((r, c), (r, c+1), wall):
                 queue.append((r, c+1))
                 visited[r][c+1] = True
-            print(f"Queue: {queue}")
         return False
 
     def switch_player(self):
         self.current_player = self.players[self.turn%PLAYERS_NUM]
+        self.ai_manager.prepare_programs_for_turn(self.players, "Game/asp/qualcosa.asp")
         self.turn += 1
+        self.ai_manager.print_programs()
         
     def check_goal(self):            
         for player in self.players: 
