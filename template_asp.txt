@@ -3,5 +3,5 @@
 % player(ID,R,C,WL,G)           ? Indica che il giocatore con id=ID si trova nella cell(R,C), ha ancora a disposizione WL muri ed ha come obiettivo la prima riga in direzione G (N,S,W,E)
 %
 % --- OUTPUT ---
-% new_wall(R1,C1,R2,C2)         ? Ne andranno passati 2 e solo 2, altrimenti il muro non è valido
-% new_pos(R,C)                  ? Indica la nuova posizione del giocatore (corrente)                  
+% newWall(R1,C1,R2,C2)         ? Ne andranno passati 2 e solo 2, altrimenti il muro non è valido
+% newPos(R,C)                  ? Indica la nuova posizione del giocatore (corrente)                  

@@ -1,8 +1,10 @@
-from aimanager import AIManager
+from ai_manager import AIManager
 from player import Player
 from wall import Wall
 
 from random import choice, randint
+
+import time
 
 TURN_LIMIT = 100
 PLAYERS_NUM = 2              # Only two players (for now)
@@ -15,8 +17,7 @@ class Game:
         self.create_players(pawns)
         self.ai_manager = AIManager()
         self.switch_player()
-        
-        self.matrix = [[0 for i in range(9)] for j in range(9)]
+        self.matrix = [[0 for i in range(9)] for j in range(9)]     # Board matrix
 
         # TODO: MURI DI PROVA (DA RIMUOVERE GRZ)
         self.players[0].walls.append((Wall(3,4,1), Wall(4,4,1)))
@@ -110,6 +111,8 @@ class Game:
         self.ai_manager.prepare_programs_for_turn(self.players, "Game/asp/qualcosa.asp")
         self.turn += 1
         self.ai_manager.print_programs()
+        self.start_time = time.perf_counter()                 
+        print(f"Turno {self.turn} di {self.current_player.id}")
         
     def check_goal(self):            
         for player in self.players: 
@@ -121,3 +124,6 @@ class Game:
         if (player.goal == 'N' and r == 0) or (player.goal == 'S' and r == 8) or (player.goal == 'W' and c == 0) or (player.goal == "E" and c == 8):
             return True
         return False
+
+    def get_time(self):
+        return time.perf_counter()

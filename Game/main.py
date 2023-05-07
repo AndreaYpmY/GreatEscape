@@ -20,6 +20,8 @@ CELL_SIZE = 70
 WALL_WIDTH = 5
 BOARD_PADDING = WIDTH-(CELL_SIZE*9+WALL_WIDTH*8)
 
+MAX_TURN_DURATION_SECONDS = 10 # TODO: Per adesso 10 secondi, poi andrà cambiato in base al tempo che ci mette l'AI a generare la mossa
+
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 
 BLACK = (0,0,0)
@@ -42,7 +44,6 @@ GREEN_PLAYER = pygame.transform.scale(GREEN_PLAYER_IMAGE, (70,70))
 
 BLUE_PLAYER_IMAGE = pygame.image.load(os.path.join("Assets", "Pawns", "blue.png"))
 BLUE_PLAYER = pygame.transform.scale(BLUE_PLAYER_IMAGE, (70,70))
-
 
 pawns = [(RED_PLAYER,RED),(GREEN_PLAYER,GREEN),(BLUE_PLAYER,BLUE)]
 
@@ -102,7 +103,6 @@ def handle_play(game, keys_pressed):
     if is_movement:
         if game.valid_movement(current_pos, next_pos):               # If no walls are traspassed
             player.new_position(next_pos[0], next_pos[1])
-            sleep(0.3)
             game.switch_player()
         else:
             print(f"{game.current_player.id} è stato squalificato (mossa illegale)")
@@ -128,8 +128,8 @@ def get_random_wall(player):
 
 def main():
     run = True
-    game = Game(pawns)
     clock = pygame.time.Clock()
+    game = Game(pawns)
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -141,7 +141,8 @@ def main():
     
         game.check_goal()
         draw_window(game)
-
+        if game.get_time() - game.start_time > MAX_TURN_DURATION_SECONDS:
+            game.switch_player()
         clock.tick(FPS)
 
 if __name__ == '__main__':
