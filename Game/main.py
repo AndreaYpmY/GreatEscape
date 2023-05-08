@@ -49,20 +49,25 @@ pawns = [(RED_PLAYER,RED),(GREEN_PLAYER,GREEN),(BLUE_PLAYER,BLUE)]
 
 def draw_window(game):
     WIN.blit(BACKGROUND, (0,0))
-    draw_board(game)
+    draw_board()
+    draw_players(game)
+    draw_walls(game)
     pygame.display.update()
 
-def draw_board(game):
+def draw_board():
     for i in range(9):
         for j in range(9):
             pygame.draw.rect(WIN, DARK_BROWN, (i*CELL_SIZE+WALL_WIDTH*(i-1)+BOARD_PADDING//2, j*CELL_SIZE+WALL_WIDTH*(j-1)+BOARD_PADDING//2, CELL_SIZE, CELL_SIZE))
+    
+def draw_players(game):
     # Draw players 
     for player in game.players:
             WIN.blit(player.image, (player.c*CELL_SIZE+WALL_WIDTH*(player.c-1)+BOARD_PADDING//2, player.r*CELL_SIZE+WALL_WIDTH*(player.r-1)+BOARD_PADDING//2, CELL_SIZE, CELL_SIZE))
 
+def draw_walls(game):
     # Draw walls
     for player in game.players:
-       for wall in player.walls:
+        for wall in player.walls:
             if(wall[0].orientation==0):
                 pygame.draw.rect(WIN, player.color, (CELL_SIZE*wall[0].cell1[1]+WALL_WIDTH*(wall[0].cell1[1]-1)+BOARD_PADDING//2, CELL_SIZE*wall[0].cell1[0]+WALL_WIDTH*(wall[0].cell1[0]-2)+BOARD_PADDING//2, CELL_SIZE*2+WALL_WIDTH, WALL_WIDTH))
             else:
