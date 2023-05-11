@@ -1,8 +1,8 @@
 % --- INPUT ---
-% wall(R1,C1,R2,C2)             ? Indica che c'è un muro tra la cell(R1,C1) ed cell(R2,C2) - O riga o colonna saranno in comune, altrimenti è un problema
-% player(ID,R,C,WL,G)           ? Indica che il giocatore con id=ID si trova nella cell(R,C), ha ancora a disposizione WL muri ed ha come obiettivo la prima riga in direzione G (N,S,W,E)
-% myId(ID)                      ? Indica il proprio ID
+% wall(R1,C1,R2,C2,R3,C3,R4,C4)         ? Indica che c'è un muro tra le cell {R1,C1,R2,C2} e le cell {R3,C3,R4,C4}
+% player(ID,R,C,WL,G)                   ? Indica che il giocatore con id=ID si trova nella cell(R,C), ha ancora a disposizione WL muri ed ha come obiettivo la prima riga in direzione G (N,S,W,E)
+% myId(ID)                              ? Indica il proprio ID
 %
 % --- OUTPUT ---
-% newWall(R1,C1,R2,C2)         ? Ne andranno passati 2 e solo 2, altrimenti il muro non è valido
-% newPos(R,C)                  ? Indica la nuova posizione del giocatore (corrente)                  
+% newWall(R1,C1,R2,C2,R3,C3,R4,C4)      ? Indica un nuovo muro in tra le cell {R1,C1,R2,C2} e le cell {R3,C3,R4,C4}
+% newPos(R,C)                           ? Indica la nuova posizione del giocatore (corrente) 

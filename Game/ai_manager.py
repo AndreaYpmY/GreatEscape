@@ -57,8 +57,8 @@ class AIManager():
             # Add the walls to the variable program
             for player in players:
                 for wall in player.walls:
-                    self.input_variable_program.add_object_input(wall[0])
-                    self.input_variable_program.add_object_input(wall[1])
+                    self.input_variable_program.add_program(self.__generate_full_wall_string_for_program__(wall))
+
         except Exception as e:
             self.__raise_exception__(e)
 
@@ -110,3 +110,6 @@ class AIManager():
 
     def __raise_exception__(self, e):
         raise Exception("Error: " + str(e))
+
+    def __generate_full_wall_string_for_program__(self,wall):
+        return(f"wall({wall[0].cell1[0]},{wall[0].cell1[1]},{wall[0].cell2[0]},{wall[0].cell2[1]},{wall[1].cell1[0]},{wall[1].cell1[1]},{wall[1].cell2[0]},{wall[1].cell2[1]}).")
