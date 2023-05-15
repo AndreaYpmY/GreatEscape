@@ -1,5 +1,6 @@
 from ai_manager import AIManager
 from player import Player
+from stopwatch import Stopwatch
 from wall import Wall
 
 from random import choice, randint
@@ -16,6 +17,7 @@ class Game:
         self.players = []
         self.create_players(pawns)
         self.ai_manager = AIManager()
+        self.stopwatch = Stopwatch()
         self.switch_player()
         self.matrix = [[0 for i in range(9)] for j in range(9)]     # Board matrix
 
@@ -111,7 +113,8 @@ class Game:
         self.ai_manager.prepare_programs_for_turn(self.players, "Game/asp/qualcosa.asp")
         self.turn += 1
         self.ai_manager.print_programs()
-        self.start_time = time.perf_counter()                 
+        self.stopwatch.reset()
+        self.stopwatch.start()
         print(f"Turno {self.turn} di {self.current_player.id}")
         
     def check_goal(self):            

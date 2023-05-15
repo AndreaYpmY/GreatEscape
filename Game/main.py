@@ -10,6 +10,7 @@ from random import randint
 from game import Game
 from player import Player
 from wall import Wall
+from stopwatch import Stopwatch
 
 FPS = 30
 
@@ -20,7 +21,7 @@ CELL_SIZE = 70
 WALL_WIDTH = 5
 BOARD_PADDING = WIDTH-(CELL_SIZE*9+WALL_WIDTH*8)
 
-MAX_TURN_DURATION_SECONDS = 10 # TODO: Per adesso 10 secondi, poi andrà cambiato in base al tempo che ci mette l'AI a generare la mossa
+MAX_TURN_DURATION_SECONDS = 0.250 # TODO: Per adesso 250ms, poi andrà cambiato in base al tempo che ci mette l'AI a generare la mossa
 
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 
@@ -135,6 +136,7 @@ def main():
     run = True
     clock = pygame.time.Clock()
     game = Game(pawns)
+    stopwatch = Stopwatch()
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -146,8 +148,10 @@ def main():
     
         game.check_goal()
         draw_window(game)
-        if game.get_time() - game.start_time > MAX_TURN_DURATION_SECONDS:
+        
+        if stopwatch.get_elapsed_time() > MAX_TURN_DURATION_SECONDS:
             game.switch_player()
+
         clock.tick(FPS)
 
 if __name__ == '__main__':
