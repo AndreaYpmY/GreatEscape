@@ -31,8 +31,8 @@ class MyCallback(Callback):
                         # TODO: Gestire i nuovi muri da ASP
                         pass
         except Exception as e:
-            self.__raise_exception__(e)
+            self.__raise_exception(e)
     
-    def __raise_exception__(self, e):
+    def __raise_exception(self, e):
         raise Exception(str(e))
         

@@ -61,7 +61,7 @@ class Game:
                     return False
         return True
     
-    def __is_out_of_board__(self, wall):
+    def __is_out_of_board(self, wall):
         if wall[0].orientation == 0:
             return wall[0].cell2[0] < 0 or wall[0].cell1[0] > 8 or wall[1].cell1[1] > 8 or wall[1].cell1[1] < 0
         else:
@@ -69,7 +69,7 @@ class Game:
 
     def valid_wall(self,new_wall):
         # Return false if the wall goes out of the board
-        if self.__is_out_of_board__(new_wall):
+        if self.__is_out_of_board(new_wall):
             print("Muro fuori dalla scacchiera") 
             return False
         for player in self.players:
@@ -82,7 +82,7 @@ class Game:
                 return False
         return True
 
-    def __crosses_new_wall__(self, curr, next, wall):
+    def __crosses_new_wall(self, curr, next, wall):
         return (wall[0].cell1 == curr and wall[0].cell2 == next) or (wall[0].cell2 == curr and wall[0].cell1 == next) or (wall[1].cell1 == curr and wall[1].cell2 == next) or (wall[1].cell2 == curr and wall[1].cell1 == next)
 
     def can_reach_goal(self, player, wall):
@@ -93,18 +93,18 @@ class Game:
         
         while not len(queue)==0:
             r, c = queue.pop(0)
-            if self.__is_goal__(player, r, c):
+            if self.__is_goal(player, r, c):
                 return True
-            if r > 0 and not visited[r-1][c] and self.valid_movement((r, c), (r-1, c)) and not self.__crosses_new_wall__((r, c), (r-1, c), wall):
+            if r > 0 and not visited[r-1][c] and self.valid_movement((r, c), (r-1, c)) and not self.__crosses_new_wall((r, c), (r-1, c), wall):
                 queue.append((r-1, c))
                 visited[r-1][c] = True
-            if r < BOARD_DIM-1 and not visited[r+1][c] and self.valid_movement((r, c), (r+1, c)) and not self.__crosses_new_wall__((r, c), (r+1, c), wall):
+            if r < BOARD_DIM-1 and not visited[r+1][c] and self.valid_movement((r, c), (r+1, c)) and not self.__crosses_new_wall((r, c), (r+1, c), wall):
                 queue.append((r+1, c))
                 visited[r+1][c] = True
-            if c > 0 and not visited[r][c-1] and self.valid_movement((r, c), (r, c-1)) and not self.__crosses_new_wall__((r, c), (r, c-1), wall):
+            if c > 0 and not visited[r][c-1] and self.valid_movement((r, c), (r, c-1)) and not self.__crosses_new_wall((r, c), (r, c-1), wall):
                 queue.append((r, c-1))
                 visited[r][c-1] = True
-            if c < BOARD_DIM-1 and not visited[r][c+1] and self.valid_movement((r, c), (r, c+1)) and not self.__crosses_new_wall__((r, c), (r, c+1), wall):
+            if c < BOARD_DIM-1 and not visited[r][c+1] and self.valid_movement((r, c), (r, c+1)) and not self.__crosses_new_wall((r, c), (r, c+1), wall):
                 queue.append((r, c+1))
                 visited[r][c+1] = True
         return False
@@ -124,7 +124,7 @@ class Game:
                 player.done = True
                 print(f"{player.id} ha finito")
 
-    def __is_goal__(self,player,r,c):
+    def __is_goal(self,player,r,c):
         if (player.goal == 'N' and r == 0) or (player.goal == 'S' and r == 8) or (player.goal == 'W' and c == 0) or (player.goal == "E" and c == 8):
             return True
         return False
@@ -156,12 +156,12 @@ class Game:
         while queue:
             current_dist, current_node = heapq.heappop(queue)
             
-            if self.__is_goal__(player, current_node[0], current_node[1]):
+            if self.__is_goal(player, current_node[0], current_node[1]):
                 ## Se il nodo corrente è quello di destinazione, restituisci il percorso trovato
-                return self.__construct_path__(predecessors, initial_node, current_node)
+                return self.__construct_path(predecessors, initial_node, current_node)
 
             ## Scopri i vicini del nodo corrente
-            neighbors = self.__get_neighbors__(current_node, rows, cols)
+            neighbors = self.__get_neighbors(current_node, rows, cols)
             
             for neighbor in neighbors:
                 row, col = neighbor
@@ -176,32 +176,32 @@ class Game:
         ## Se non è stato trovato un percorso tra i nodi, restituisci None
         return None
 
-    def __get_neighbors__(self,node, rows, cols):
+    def __get_neighbors(self,node, rows, cols):
         row, col = node
         neighbors = []
         
-        if row > 0 and not self.__exist_wall__((row,col),(row-1,col)):
+        if row > 0 and not self.__wall_exists((row,col),(row-1,col)):
             neighbors.append((row - 1, col))
-        if row < rows - 1 and not self.__exist_wall__((row,col),(row+1,col)):
+        if row < rows - 1 and not self.__wall_exists((row,col),(row+1,col)):
             neighbors.append((row + 1, col))
-        if col > 0 and not self.__exist_wall__((row,col),(row,col-1)):
+        if col > 0 and not self.__wall_exists((row,col),(row,col-1)):
             neighbors.append((row, col - 1))
-        if col < cols - 1 and not self.__exist_wall__((row,col),(row,col+1)):
+        if col < cols - 1 and not self.__wall_exists((row,col),(row,col+1)):
             neighbors.append((row, col + 1))
         
         return neighbors
 
-    def __exist_wall__(self,cell1,cell2):
+    def __wall_exists(self,cell1,cell2):
         for player in self.players:
             for wall in player.walls:
                 if (wall[0].cell1 == cell1 and wall[0].cell2 == cell2) or (wall[0].cell2 == cell1 and wall[0].cell1 == cell2) or (wall[1].cell1 == cell1 and wall[1].cell2 == cell2) or (wall[1].cell2 == cell1 and wall[1].cell1 == cell2):
                     return True
         return False
 
-    def __construct_path__(self,predecessors, start_node, end_node):
+    def __construct_path(self,predecessors, start_node, end_node):
         path = [end_node]
         current_node = end_node
-        
+
         while current_node != start_node:
             current_node = predecessors[current_node]
             path.append(current_node)

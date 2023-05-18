@@ -18,7 +18,7 @@ class AIManager():
     def __init__(self):
         try:
             # TODO: Gestire per ogni OS, ricordarsi che ogni OS gestisce gli slash in modo diverso
-            self.__prepare_handler__()
+            self.__prepare_handler()
 
             self.input_fixed_program, self.input_variable_program = ASPInputProgram(), ASPInputProgram()
 
@@ -32,14 +32,14 @@ class AIManager():
 
 
         except Exception as e:
-            self.__raise_exception__(e)
+            self.__raise_exception(e)
 
     # TODO: Aggiungere nomi files quando saranno creati
     def fill_fixed_program(self,asp_path):
         try:
             f = open(asp_path, "r")
         except Exception as e:
-            self.__raise_exception__(e)
+            self.__raise_exception(e)
 
         for line in f:
             # Doesn't add comments and empty lines to the program
@@ -48,7 +48,7 @@ class AIManager():
             try:
                 self.input_fixed_program.add_program(line)
             except Exception as e:
-                self.__raise_exception__(e)
+                self.__raise_exception(e)
 
     def prepare_programs_for_turn(self, players, asp_path):
         try:
@@ -61,10 +61,12 @@ class AIManager():
             # Add the walls to the variable program
             for player in players:
                 for wall in player.walls:
-                    self.input_variable_program.add_program(self.__generate_full_wall_string_for_program__(wall))
+                    self.input_variable_program.add_program(self.__generate_full_wall_string_for_program(wall))
+
+            self.__generate
 
         except Exception as e:
-            self.__raise_exception__(e)
+            self.__raise_exception(e)
 
     def ask_for_a_move(self,player):
         timekeeper = Timekeeper()
@@ -75,7 +77,7 @@ class AIManager():
             # Start the program asyncronously
             self.handler.start_async(my_callback)
         except Exception as e:
-            self.__raise_exception__(e)
+            self.__raise_exception(e)
 
     def print_programs(self):
         try:
@@ -84,10 +86,10 @@ class AIManager():
             print("Variable program:")
             print(self.input_variable_program.get_programs())
         except Exception as e:
-            self.__raise_exception__(e)
+            self.__raise_exception(e)
         
 
-    def __prepare_handler__(self):
+    def __prepare_handler(self):
         self.os = platform.system()
 
         if self.os == "Windows":    # Windows
@@ -99,8 +101,8 @@ class AIManager():
         else:
             raise Exception("OS not supported")
 
-    def __raise_exception__(self, e):
+    def __raise_exception(self, e):
         raise Exception(str(e))
 
-    def __generate_full_wall_string_for_program__(self,wall):
+    def __generate_full_wall_string_for_program(self,wall):
         return(f"wall({wall[0].cell1[0]},{wall[0].cell1[1]},{wall[0].cell2[0]},{wall[0].cell2[1]},{wall[1].cell1[0]},{wall[1].cell1[1]},{wall[1].cell2[0]},{wall[1].cell2[1]}).")
