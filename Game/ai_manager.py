@@ -5,10 +5,14 @@ from languages.asp.asp_mapper import ASPMapper
 from languages.asp.asp_input_program import ASPInputProgram
 from languages.asp.symbolic_constant import SymbolicConstant
 
+import platform
+from time import sleep
+
 # Our classes
 from player import Player
+from timekeeper import Timekeeper
 from wall import Wall
-import platform
+from my_callback import MyCallback
 
 class AIManager():
     def __init__(self):
@@ -50,7 +54,7 @@ class AIManager():
         try:
             # Clear all the programs (even the fixed one, because every player has its own)
             self.input_fixed_program.clear_all()
-            #self.fill_fixed_program(asp_path)                       # Fill the fixed program
+            self.fill_fixed_program(asp_path)                       # Fill the fixed program
             self.input_variable_program.clear_all()                 # Clear the variable program
             self.input_variable_program.add_objects_input(players)  # Add the players objects to the variable program
 
@@ -62,27 +66,14 @@ class AIManager():
         except Exception as e:
             self.__raise_exception__(e)
 
-    def get_answer_sets(self):
+    def ask_for_a_move(self,player):
+        timekeeper = Timekeeper()
         try:
-            answer_sets = self.handler.start_sync()
-            return answer_sets
-        except Exception as e:
-            self.__raise_exception__(e)
-
-    # TODO: Controllare il funzionamento di questo metodo, perchè non credo funzioni
-    def do_next_move(self,player):
-        try:
-            answer_sets = self.get_answer_sets()
-            for answer_set in answer_sets:
-                for predicate in answer_set.get_predicates():
-                    if predicate.get_predicate_name() == "newPos":
-                        r = predicate.get_predicate_argument(1)
-                        c = predicate.get_predicate_argument(2)
-                        player.new_position(r,c)
-                        break
-                    elif predicate.get_predicate_name() == "newWall":
-                        # TODO: Gestire i nuovi muri da ASP
-                        pass
+            # Create the callback object, which receives the current player, the current turn start time, and the maximum duration
+            my_callback = MyCallback(player,timekeeper.get_start_time(),timekeeper.MAX_TURN_DURATION_SECONDS)
+            
+            # Start the program asyncronously
+            self.handler.start_async(my_callback)
         except Exception as e:
             self.__raise_exception__(e)
 
@@ -109,7 +100,7 @@ class AIManager():
             raise Exception("OS not supported")
 
     def __raise_exception__(self, e):
-        raise Exception("Error: " + str(e))
+        raise Exception(str(e))
 
     def __generate_full_wall_string_for_program__(self,wall):
         return(f"wall({wall[0].cell1[0]},{wall[0].cell1[1]},{wall[0].cell2[0]},{wall[0].cell2[1]},{wall[1].cell1[0]},{wall[1].cell1[1]},{wall[1].cell2[0]},{wall[1].cell2[1]}).")

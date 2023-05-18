@@ -1,9 +1,10 @@
 from ai_manager import AIManager
 from player import Player
-from stopwatch import Stopwatch
+from timekeeper import Timekeeper
 from wall import Wall
 
 from random import choice, randint
+import heapq
 
 import time
 
@@ -17,7 +18,7 @@ class Game:
         self.players = []
         self.create_players(pawns)
         self.ai_manager = AIManager()
-        self.stopwatch = Stopwatch()
+        self.timekeeper = Timekeeper()
         self.switch_player()
         self.matrix = [[0 for i in range(9)] for j in range(9)]     # Board matrix
 
@@ -110,11 +111,11 @@ class Game:
 
     def switch_player(self):
         self.current_player = self.players[self.turn%PLAYERS_NUM]
-        self.ai_manager.prepare_programs_for_turn(self.players, "Game/asp/qualcosa.asp")
+        self.ai_manager.prepare_programs_for_turn(self.players, "asp/test.asp")
         self.turn += 1
         self.ai_manager.print_programs()
-        self.stopwatch.reset()
-        self.stopwatch.start()
+        self.timekeeper.start()
+        self.ai_manager.ask_for_a_move(self.current_player)
         print(f"Turno {self.turn} di {self.current_player.id}")
         
     def check_goal(self):            
@@ -130,3 +131,80 @@ class Game:
 
     def get_time(self):
         return time.perf_counter()
+    
+
+
+    # Dijkstra algorithm
+
+    def dijkstra(self, player : Player):
+        rows = len(self.matrix)
+        cols = len(self.matrix[0])
+        
+        initial_node = (player.r,player.c)
+        print(initial_node)
+
+        ## Creazione di una matrice delle distanze con valori infiniti per tutti i nodi tranne il nodo di partenza
+        distances = [[float('inf')] * cols for _ in range(rows)]
+        distances[initial_node[0]][initial_node[1]] = 0
+        
+        ## Coda di priorità per memorizzare i nodi da visitare
+        queue = [(0, initial_node)]
+        
+        ## Dizionario per tenere traccia dei predecessori di ogni nodo
+        predecessors = {}
+        
+        while queue:
+            current_dist, current_node = heapq.heappop(queue)
+            
+            if self.__is_goal__(player, current_node[0], current_node[1]):
+                ## Se il nodo corrente è quello di destinazione, restituisci il percorso trovato
+                return self.__construct_path__(predecessors, initial_node, current_node)
+
+            ## Scopri i vicini del nodo corrente
+            neighbors = self.__get_neighbors__(current_node, rows, cols)
+            
+            for neighbor in neighbors:
+                row, col = neighbor
+                new_dist = current_dist + 1  ## Peso degli archi è 1
+                
+                if new_dist < distances[row][col]:
+                    ## Aggiorna la distanza minima per il vicino e il predecessore
+                    distances[row][col] = new_dist
+                    predecessors[neighbor] = current_node
+                    heapq.heappush(queue, (new_dist, neighbor))
+        
+        ## Se non è stato trovato un percorso tra i nodi, restituisci None
+        return None
+
+    def __get_neighbors__(self,node, rows, cols):
+        row, col = node
+        neighbors = []
+        
+        if row > 0 and not self.__exist_wall__((row,col),(row-1,col)):
+            neighbors.append((row - 1, col))
+        if row < rows - 1 and not self.__exist_wall__((row,col),(row+1,col)):
+            neighbors.append((row + 1, col))
+        if col > 0 and not self.__exist_wall__((row,col),(row,col-1)):
+            neighbors.append((row, col - 1))
+        if col < cols - 1 and not self.__exist_wall__((row,col),(row,col+1)):
+            neighbors.append((row, col + 1))
+        
+        return neighbors
+
+    def __exist_wall__(self,cell1,cell2):
+        for player in self.players:
+            for wall in player.walls:
+                if (wall[0].cell1 == cell1 and wall[0].cell2 == cell2) or (wall[0].cell2 == cell1 and wall[0].cell1 == cell2) or (wall[1].cell1 == cell1 and wall[1].cell2 == cell2) or (wall[1].cell2 == cell1 and wall[1].cell1 == cell2):
+                    return True
+        return False
+
+    def __construct_path__(self,predecessors, start_node, end_node):
+        path = [end_node]
+        current_node = end_node
+        
+        while current_node != start_node:
+            current_node = predecessors[current_node]
+            path.append(current_node)
+        
+        path.reverse()
+        return path    
