@@ -26,5 +26,4 @@ class GenericCallback(Callback):
         raise NotImplementedError("This method must be implemented in the child class")
 
     def _raise_exception(self, e):
-        raise Exception(str(e))
-        
+        raise Exception(str(e))        

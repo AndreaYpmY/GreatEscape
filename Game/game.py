@@ -16,6 +16,7 @@ BOARD_DIM = 9
 class Game:
     def __init__(self, pawns):
         self.turn = 0
+        self.winner = None
         self.players = []
         self.create_players(pawns)
         # self.ai_manager_monetti_tocci = AIManagerMonettiTocci()
@@ -30,8 +31,6 @@ class Game:
         self.players[1].walls.append((Wall(2,2,0), Wall(2,3,0)))
         print(f"Red player goal: {self.players[0].goal}")
         print(f"Green player goal: {self.players[1].goal}")
-
-        
 
     def create_players(self,pawns):
         goals = ['N', 'S', 'W', 'E']
@@ -112,23 +111,70 @@ class Game:
         return False
 
     def switch_player(self):
+        if self.turn > 1:
+            self.__check_last_move_validity()
+            if self.winner is not None:
+                return
+
         self.current_player = self.players[self.turn%PLAYERS_NUM]
         self.turn += 1
         self.timekeeper.start()
         if(self.turn % 2 == 1):
+            # Save the current player position and walls. They will be used to check whether the move is illegal
+            self.old_player_pos = (self.current_player.r, self.current_player.c)
+            self.old_player_walls = self.current_player.walls.copy()
             # self.ai_manager_monetti_tocci.ask_for_a_move(self.current_player.id, self.players)
             print(f"Turno {self.turn} di MonettiTocci")
         else:
+            # Save the current player position and walls. They will be used to check whether the move is illegal
+            self.old_player_pos = (self.current_player.r, self.current_player.c)
+            self.old_player_walls = self.current_player.walls.copy()
             # self.ai_manager_raso_villella.ask_for_a_move(self.current_player.id, self.players)
             print(f"Turno {self.turn} di RasoVillella")
-
-        
-        
+         
     def check_goal(self):            
         for player in self.players: 
             if ((player.goal == 'N' and player.r == 0) or (player.goal == 'S' and player.r == 8) or (player.goal == 'W' and player.c == 0) or (player.goal == "E" and player.c == 8)) and (not player.done):
                 player.done = True
                 print(f"{player.id} ha finito")
+
+    def __disqualify_player(self, player):
+        print(f"{player.id} è stato squalificato")
+        if PLAYERS_NUM == 2:
+            if player.id == 1:
+                self.winner = 2
+            else:
+                self.winner = 1
+        else:
+            # To be implemented in the future, if we want to play with more than two players
+            pass
+        
+
+    def __check_last_move_validity(self):
+        current_player_pos = (self.current_player.r, self.current_player.c)
+        print(f"Current player pos: {current_player_pos}")
+        print(f"Old player pos: {self.old_player_pos}")
+        # If the current player position is the same as the old one, the player probably placed a wall
+        if current_player_pos == self.old_player_pos:
+            if self.current_player.walls == self.old_player_walls:
+                # The player didn't move and didn't place a wall, so he loses (?????????)
+                self.__disqualify_player(self.current_player)
+            # Else the player placed a wall
+            else:
+                # Check if the wall is valid
+                if self.valid_wall(self.current_player.walls[-1]):
+                    self.current_player.dec_remaining_walls()
+                else:
+                    self.__disqualify_player(self.current_player)
+                    # The wall is not valid, so the player loses
+        # Else the player moved
+        else:
+            if self.valid_movement(self.old_player_pos, current_player_pos):
+                if self.__is_goal(self.current_player, self.current_player.r, self.current_player.c):
+                    print(f"{self.current_player.id} ha vinto")
+                    self.winner = self.current_player.id
+            else:
+                self.__disqualify_player(self.current_player)
 
     def __is_goal(self,player,r,c):
         if (player.goal == 'N' and r == 0) or (player.goal == 'S' and r == 8) or (player.goal == 'W' and c == 0) or (player.goal == "E" and c == 8):

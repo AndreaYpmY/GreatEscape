@@ -73,6 +73,7 @@ def draw_walls(game):
             else:
                 pygame.draw.rect(WIN, player.color, (CELL_SIZE*wall[0].cell1[1]+WALL_WIDTH*(wall[0].cell1[1]-2)+BOARD_PADDING//2, CELL_SIZE*wall[0].cell1[0]+WALL_WIDTH*(wall[0].cell1[0]-1)+BOARD_PADDING//2, WALL_WIDTH, CELL_SIZE*2+WALL_WIDTH))
 
+'''
 # TODO: FUNZIONE DI PROVA (DA RIMUOVERE GRZ)
 def handle_play(game, keys_pressed):
     player = game.current_player
@@ -115,7 +116,7 @@ def handle_play(game, keys_pressed):
         if game.valid_wall(wall):
             player.place_wall(wall)
             game.switch_player()
-
+'''
 
 def get_random_wall(player):
     orientation = randint(0,1)  
@@ -150,6 +151,12 @@ def main():
         
         if time.time() - timekeeper.get_start_time() > timekeeper.MAX_TURN_DURATION_SECONDS:
             game.switch_player()
+            if game.turn > 1:
+                if game.winner is not None:
+                    # TODO: Implementare fine del gioco, con cambio di scenario
+                    run = False
+                    print(f"Winner: {game.winner}")
+            
 
         clock.tick(FPS)
 
