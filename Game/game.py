@@ -18,8 +18,8 @@ class Game:
         self.turn = 0
         self.players = []
         self.create_players(pawns)
-        self.ai_manager = AIManager()
-        self.ai_manager_monetti_tocci = AIManagerMonettiTocci()
+        # self.ai_manager_monetti_tocci = AIManagerMonettiTocci()
+        # self.ai_manager_raso_villella = AIManagerRasoVillella()
         self.timekeeper = Timekeeper()
         self.switch_player()
         self.matrix = [[0 for i in range(9)] for j in range(9)]     # Board matrix
