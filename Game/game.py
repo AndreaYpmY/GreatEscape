@@ -19,16 +19,29 @@ class Game:
         self.winner = None
         self.players = []
         self.create_players(pawns)
-        # self.ai_manager_monetti_tocci = AIManagerMonettiTocci()
+        # self.ai_manager_monetti_tocci = AIManagerMonettiTocci("./asp/monettitocci.asp")
+
         # self.ai_manager_raso_villella = AIManagerRasoVillella()
         self.timekeeper = Timekeeper()
         self.switch_player()
         self.matrix = [[0 for i in range(9)] for j in range(9)]     # Board matrix
 
         # TODO: MURI DI PROVA (DA RIMUOVERE GRZ)
+        '''
         self.players[0].walls.append((Wall(3,4,1), Wall(4,4,1)))
         self.players[0].walls.append((Wall(6,3,0), Wall(6,4,0)))
         self.players[1].walls.append((Wall(2,2,0), Wall(2,3,0)))
+        self.players[1].walls.append((Wall(4,2,1), Wall(5,2,1)))
+        self.players[1].walls.append((Wall(6,4,1), Wall(7,4,1)))
+        self.players[1].walls.append((Wall(4,6,0), Wall(4,7,0)))
+        self.players[1].walls.append((Wall(2,7,0), Wall(2,8,0)))
+        self.players[1].walls.append((Wall(6,7,0), Wall(6,8,0)))
+        self.players[0].walls.append((Wall(1,5,0), Wall(1,6,0)))
+        self.players[0].walls.append((Wall(5,5,0), Wall(5,6,0)))
+        self.players[0].walls.append((Wall(7,7,1), Wall(8,7,1)))
+        '''
+
+
         print(f"Red player goal: {self.players[0].goal}")
         print(f"Green player goal: {self.players[1].goal}")
 
@@ -74,7 +87,13 @@ class Game:
             print("Muro fuori dalla scacchiera") 
             return False
         for player in self.players:
-            for wall in player.walls:
+            if player == self.current_player:
+                # All the walls of the player except the last one (the one that is being placed)
+                walls = player.walls[:-1]
+            else:
+                walls = player.walls
+
+            for wall in walls:
                 if (new_wall[1].cell1 == wall[1].cell1) or (new_wall[1].cell1 == wall[0].cell1 and new_wall[1].orientation == wall[0].orientation) or (new_wall[0].cell1 == wall[1].cell1 and new_wall[1].orientation == wall[0].orientation) or (new_wall[0].cell1 == wall[0].cell1 and new_wall[0].orientation == wall[1].orientation):
                     print(f"Il tuo muro non è valido per il posizionamento")
                     return False
@@ -165,8 +184,8 @@ class Game:
                 if self.valid_wall(self.current_player.walls[-1]):
                     self.current_player.dec_remaining_walls()
                 else:
-                    self.__disqualify_player(self.current_player)
                     # The wall is not valid, so the player loses
+                    self.__disqualify_player(self.current_player)
         # Else the player moved
         else:
             if self.valid_movement(self.old_player_pos, current_player_pos):

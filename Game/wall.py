@@ -2,7 +2,7 @@ from languages.predicate import Predicate
 
 class Wall(Predicate):
     predicate_name = "wall"
-    
+    '''
     def __init__(self, row, col, orientation):
         Predicate.__init__(self, [("r1"), ("c1"), ("r2"), ("c2")])
         self.cell1 = (row,col)
@@ -10,12 +10,12 @@ class Wall(Predicate):
         self.orientation = orientation        # 0 - Horizontal, 1 - Vertical
         self.cell2 = self.__generate_cell2__()
         self.r2, self.c2 = self.cell2[0], self.cell2[1]
-
-    #def __init__(self, cell1, cell2):
-    #    Predicate.__init__(self, [(cell1[0]), (cell1[1]), (cell2[0]), (cell2[1])])
-    #    self.cell1 = cell1
-    #    self.cell2 = cell2
-    #    self.orientation = self.__generate_orientation__()
+    '''
+    def __init__(self, cell1, cell2):
+        Predicate.__init__(self, [(cell1[0]), (cell1[1]), (cell2[0]), (cell2[1])])
+        self.cell1 = cell1
+        self.cell2 = cell2
+        self.orientation = self.__generate_orientation__()
 
     def __generate_orientation__(self):
         if(self.cell1[0] == self.cell2[0]):     # Vertical
