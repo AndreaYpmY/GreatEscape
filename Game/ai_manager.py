@@ -81,9 +81,9 @@ class AIManager():
         self.os = platform.system()
 
         if self.os == "Windows":    # Windows
-            self.handler = DesktopHandler(DLV2DesktopService("executables\dlv-2.1.1-win64.exe")) 
+            self.handler = DesktopHandler(DLV2DesktopService("executables\dlv2.exe")) 
         elif self.os == "Linux":    # Linux
-            self.handler = DesktopHandler(DLV2DesktopService("executables/./dlv-2.1.1-linux-x86_64"))
+            self.handler = DesktopHandler(DLV2DesktopService("executables/./dlv2"))
         elif self.os == "Darwin":    # MacOS
             self.handler = DesktopHandler(DLV2DesktopService("executables/./dlv-2.1.1-macos-12.2"))
         else:
