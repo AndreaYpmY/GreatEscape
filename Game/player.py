@@ -16,6 +16,7 @@ class Player(Predicate):
         self.hud = hud
         self.color = color
         self.goal = goal
+        self.old_positions = []
         self.done = False
 
     def place_wall(self, walls):
@@ -31,6 +32,7 @@ class Player(Predicate):
         return((wall1,wall2))
 
     def new_position(self,r,c):
+        self.__add_old_position()
         self.r = r
         self.c = c
 
@@ -69,6 +71,11 @@ class Player(Predicate):
 
     def set_goal(self, goal):
         self.goal = goal
+
+    def __add_old_position(self):
+        if len(self.old_positions)==5:
+            self.old_positions.pop(0)
+        self.old_positions.append((self.r,self.c))
 
     def __str__(self):
         return f"Player: ({self.id} {self.r} {self.c} {self.remaining_walls} {self.goal})"
