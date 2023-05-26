@@ -1,10 +1,11 @@
 from ai_manager import AIManager
 from ai_manager_monettitocci import AIManagerMonettiTocci
+from ai_player import AIPlayer
 from player import Player
 from timekeeper import Timekeeper
 from wall import Wall
 
-from random import choice, randint
+from random import choice, randint, shuffle
 import heapq
 
 import time
@@ -18,12 +19,17 @@ class Game:
         self.turn = 0
         self.winner = None
         self.players = []
-        self.create_players(pawns)
-        # self.ai_manager_monetti_tocci = AIManagerMonettiTocci("./asp/monettitocci.asp")
+        self.ai_managers_pool = []          # Pool of AI managers, every entry is a tuple (AIManager, PlayerName)
+        
+        # YOU MUST ADD YOUR AI MANAGER HERE (as written below)
+        #self.ai_managers_pool.append((AIManagerMonettiTocci(...params...), "MonettiTocci"))
 
-        # self.ai_manager_raso_villella = AIManagerRasoVillella()
+        self.create_players(pawns)
+        
         self.timekeeper = Timekeeper()
-        self.switch_player()
+        
+        # self.switch_player()  # Commented because it's called in main (game loop) after the countdown
+        
         self.matrix = [[0 for i in range(9)] for j in range(9)]     # Board matrix
 
         # TODO: MURI DI PROVA (DA RIMUOVERE GRZ)
@@ -41,15 +47,14 @@ class Game:
         self.players[0].walls.append((Wall(7,7,1), Wall(8,7,1)))
         '''
 
-
-        print(f"Red player goal: {self.players[0].goal}")
-        print(f"Green player goal: {self.players[1].goal}")
-
-    def create_players(self,pawns):
+    def create_players(self,assets):
         goals = ['N', 'S', 'W', 'E']
+        shuffle(self.ai_managers_pool)          # Shuffle the AI managers pool to assign them randomly to the players
         for i in range(PLAYERS_NUM):                 
             goal = choice(goals)
             goals.remove(goal)
+            name = self.ai_managers_pool[i][1]
+            ai_manager = self.ai_managers_pool[i][0]
         
             if goal == 'N':
                 start_r = 8                         # Last row
@@ -64,7 +69,7 @@ class Game:
                 start_c = 0                         # First col
                 start_r = randint(1, 7)             # Angles excluded
 
-            self.players.append(Player(i+1, start_r, start_c, goal, pawns[i][0], pawns[i][1]))
+            self.players.append(AIPlayer(i+1, name, start_r, start_c, goal, assets[i][0], assets[i][1], assets[i][2], ai_manager))
 
     def valid_movement(self, current_pos, next_pos):
         for player in self.players:
@@ -84,7 +89,7 @@ class Game:
     def valid_wall(self,new_wall):
         # Return false if the wall goes out of the board
         if self.__is_out_of_board(new_wall):
-            print("Muro fuori dalla scacchiera") 
+            print("Wall out of board") 
             return False
         for player in self.players:
             if player == self.current_player:
@@ -95,10 +100,10 @@ class Game:
 
             for wall in walls:
                 if (new_wall[1].cell1 == wall[1].cell1) or (new_wall[1].cell1 == wall[0].cell1 and new_wall[1].orientation == wall[0].orientation) or (new_wall[0].cell1 == wall[1].cell1 and new_wall[1].orientation == wall[0].orientation) or (new_wall[0].cell1 == wall[0].cell1 and new_wall[0].orientation == wall[1].orientation):
-                    print(f"Il tuo muro non è valido per il posizionamento")
+                    print(f"Your wall is not valid because it overlaps with another wall")
                     return False
             if not self.can_reach_goal(player, new_wall):
-                print(f"Il tuo muro non è valido perchè blocca il passaggio")	
+                print(f"Your wall is not valid because it blocks the only path left to the goal")	
                 return False
         return True
 
@@ -138,27 +143,23 @@ class Game:
         self.current_player = self.players[self.turn%PLAYERS_NUM]
         self.turn += 1
         self.timekeeper.start()
-        if(self.turn % 2 == 1):
-            # Save the current player position and walls. They will be used to check whether the move is illegal
-            self.old_player_pos = (self.current_player.r, self.current_player.c)
-            self.old_player_walls = self.current_player.walls.copy()
-            # self.ai_manager_monetti_tocci.ask_for_a_move(self.current_player.id, self.players)
-            print(f"Turno {self.turn} di MonettiTocci")
-        else:
-            # Save the current player position and walls. They will be used to check whether the move is illegal
-            self.old_player_pos = (self.current_player.r, self.current_player.c)
-            self.old_player_walls = self.current_player.walls.copy()
-            # self.ai_manager_raso_villella.ask_for_a_move(self.current_player.id, self.players)
-            print(f"Turno {self.turn} di RasoVillella")
+        
+        # Save the current player position and walls. They will be used to check whether the move is illegal
+        self.old_player_pos = (self.current_player.r, self.current_player.c)
+        self.old_player_walls = self.current_player.walls.copy()
+        self.current_player.ai_manager.ask_for_a_move(self.current_player.id, self.players)
+        print(f"Turn {self.turn}: {self.current_player.name} plays")
+            
+
          
     def check_goal(self):            
         for player in self.players: 
             if ((player.goal == 'N' and player.r == 0) or (player.goal == 'S' and player.r == 8) or (player.goal == 'W' and player.c == 0) or (player.goal == "E" and player.c == 8)) and (not player.done):
                 player.done = True
-                print(f"{player.id} ha finito")
+                print(f"{player.id} reached the goal")
 
     def __disqualify_player(self, player):
-        print(f"{player.id} è stato squalificato")
+        print(f"{player.id} has been disqualified")
         if PLAYERS_NUM == 2:
             if player.id == 1:
                 self.winner = 2
@@ -176,7 +177,7 @@ class Game:
         # If the current player position is the same as the old one, the player probably placed a wall
         if current_player_pos == self.old_player_pos:
             if self.current_player.walls == self.old_player_walls:
-                # The player didn't move and didn't place a wall, so he loses (?????????)
+                # The player didn't move and didn't place a wall, so he loses
                 self.__disqualify_player(self.current_player)
             # Else the player placed a wall
             else:

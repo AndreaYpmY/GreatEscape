@@ -18,7 +18,7 @@ FPS = 30
 
 TURN_LIMIT = 100
 
-WIDTH, HEIGHT = 1200, 800
+WIDTH, HEIGHT = 1300, 800
 CELL_SIZE = 70
 WALL_WIDTH = 5
 BOARD_WIDTH = CELL_SIZE*9+WALL_WIDTH*8
@@ -45,25 +45,60 @@ BACKGROUND = pygame.transform.scale_by(BACKGROUND_IMAGE, 0.7)
 RED_PLAYER_IMAGE = pygame.image.load(os.path.join("Assets", "Pawns", "red.png"))
 RED_PLAYER = pygame.transform.scale(RED_PLAYER_IMAGE, (70,70))
 
+RED_HUD_IMAGE = pygame.image.load(os.path.join("Assets", "Pawns", "red.png"))
+#RED_HUD_IMAGE = pygame.image.load(os.path.join("Assets", "HUD", "red.png"))
+RED_HUD = pygame.transform.scale(RED_HUD_IMAGE, (400,250))
+
 GREEN_PLAYER_IMAGE = pygame.image.load(os.path.join("Assets", "Pawns", "green.png"))
 GREEN_PLAYER = pygame.transform.scale(GREEN_PLAYER_IMAGE, (70,70))
+GREEN_HUD_IMAGE = pygame.image.load(os.path.join("Assets", "Pawns", "green.png"))
+#GREEN_HUD_IMAGE = pygame.image.load(os.path.join("Assets", "HUD", "green.png"))
+GREEN_HUD = pygame.transform.scale(GREEN_HUD_IMAGE, (400,250))
 
 BLUE_PLAYER_IMAGE = pygame.image.load(os.path.join("Assets", "Pawns", "blue.png"))
 BLUE_PLAYER = pygame.transform.scale(BLUE_PLAYER_IMAGE, (70,70))
+BLUE_HUD_IMAGE = pygame.image.load(os.path.join("Assets", "Pawns", "blue.png"))
+#BLUE_HUD_IMAGE = pygame.image.load(os.path.join("Assets", "HUD", "blue.png"))
+BLUE_HUD = pygame.transform.scale(BLUE_HUD_IMAGE, (400,250))
 
 YELLOW_PLAYER_IMAGE = pygame.image.load(os.path.join("Assets", "Pawns", "yellow.png"))
 YELLOW_PLAYER = pygame.transform.scale(YELLOW_PLAYER_IMAGE, (70,70))
+YELLOW_HUD_IMAGE = pygame.image.load(os.path.join("Assets", "Pawns", "yellow.png"))
+#YELLOW_HUD_IMAGE = pygame.image.load(os.path.join("Assets", "HUD", "yellow.png"))
+YELLOW_HUD = pygame.transform.scale(YELLOW_HUD_IMAGE, (400,250))
 
 CELL_IMAGE = pygame.image.load(os.path.join("Assets", "cell.png"))
 CELL = pygame.transform.scale(CELL_IMAGE, (CELL_SIZE,CELL_SIZE))
 
-pawns = [(RED_PLAYER,RED),(BLUE_PLAYER,BLUE),(GREEN_PLAYER,GREEN),(YELLOW_PLAYER,YELLOW)]
+COUNTDOWN_3_IMAGE = pygame.image.load(os.path.join("Assets", "3.png"))
+COUNTDOWN_3 = pygame.transform.scale(COUNTDOWN_3_IMAGE, (300,300))
+COUNTDOWN_2_IMAGE = pygame.image.load(os.path.join("Assets", "2.png"))
+COUNTDOWN_2 = pygame.transform.scale(COUNTDOWN_2_IMAGE, (300,300))
+COUNTDOWN_1_IMAGE = pygame.image.load(os.path.join("Assets", "1.png"))
+COUNTDOWN_1 = pygame.transform.scale(COUNTDOWN_1_IMAGE, (300,300))
 
-def draw_window(game):
+assets = [(RED_PLAYER,RED_HUD,RED),(BLUE_PLAYER,BLUE_HUD,BLUE),(GREEN_PLAYER,GREEN_HUD,GREEN),(YELLOW_PLAYER,YELLOW_HUD,YELLOW)]
+
+def draw_window(game, game_started, timekeeper, big_text, small_text):
     WIN.blit(BACKGROUND, (0,0))
+    
     draw_board(game)
     draw_players(game)
     draw_walls(game)
+    
+    if not game_started:
+        time_elapsed = time.time() - timekeeper.get_start_time()
+        # 3 seconds countdown
+        if time_elapsed >= 1 and time_elapsed < 2:
+            WIN.blit(COUNTDOWN_2, (WIDTH-435,HEIGHT//2-150))
+        elif time_elapsed >= 2 and time_elapsed < 3:
+            WIN.blit(COUNTDOWN_1, (WIDTH-435,HEIGHT//2-150))
+        elif time_elapsed < 1:
+            WIN.blit(COUNTDOWN_3, (WIDTH-435,HEIGHT//2-150))
+    else:
+        pass
+        #draw_hud(game)
+
     pygame.display.update()
 
 def draw_board(game):
@@ -95,7 +130,7 @@ def draw_board(game):
 def draw_players(game):
     # Draw players 
     for player in game.players:
-            WIN.blit(player.image, (player.c*CELL_SIZE+WALL_WIDTH*(player.c-1)+BOARD_PADDING//2, player.r*CELL_SIZE+WALL_WIDTH*(player.r-1)+BOARD_PADDING//2, CELL_SIZE, CELL_SIZE))
+            WIN.blit(player.pawn, (player.c*CELL_SIZE+WALL_WIDTH*(player.c-1)+BOARD_PADDING//2, player.r*CELL_SIZE+WALL_WIDTH*(player.r-1)+BOARD_PADDING//2, CELL_SIZE, CELL_SIZE))
 
 def draw_walls(game):
     # Draw walls
@@ -185,30 +220,50 @@ def get_random_wall(player):
              
 
 def main():
+    pygame.font.init()
+    
+    try:
+        big_text = pygame.font.Font(os.path.join("Assets", "Fonts", "Barrio-Regular.ttf"), 70)
+        small_text = pygame.font.Font(os.path.join("Assets", "Fonts", "Barrio-Regular.ttf"), 50)
+    except:
+        raise Exception("Font file not found")
+
+    #big_text = pygame.font.SysFont("Arial", 32)
+    #small_text = pygame.font.SysFont("Arial", 24)
+
     run = True
     clock = pygame.time.Clock()
-    game = Game(pawns)
+    game = Game(assets)
+    game_started = False
     timekeeper = Timekeeper()
+    timekeeper.start()
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
-        keys_pressed = pygame.key.get_pressed()
-        if (True in keys_pressed):
-            handle_play(game, keys_pressed)
-    
-        game.check_goal()
-        draw_window(game)
+        if game_started:
+            keys_pressed = pygame.key.get_pressed()
+            if (True in keys_pressed):
+                handle_play(game, keys_pressed)
         
-        if time.time() - timekeeper.get_start_time() > timekeeper.MAX_TURN_DURATION_SECONDS:
-            game.switch_player()
-            if game.turn > 1:
-                if game.winner is not None:
-                    # TODO: Implementare fine del gioco, con cambio di scenario
-                    run = False
-                    print(f"Winner: {game.winner}")
+            game.check_goal()
             
+            
+            if time.time() - timekeeper.get_start_time() > timekeeper.MAX_TURN_DURATION_SECONDS:
+                game.switch_player()
+                if game.turn > 1:
+                    if game.winner is not None:
+                        # TODO: Implementare fine del gioco, con cambio di scenario
+                        run = False
+                        print(f"Winner: {game.winner}")    
+        else:
+            time_elapsed = time.time() - timekeeper.get_start_time()
+            if time_elapsed >= 3:
+                game_started = True
+                game.switch_player()
+
+        draw_window(game, game_started, timekeeper, big_text, small_text)
 
         clock.tick(FPS)
 

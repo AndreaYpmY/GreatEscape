@@ -4,14 +4,16 @@ from languages.predicate import Predicate
 class Player(Predicate):
     predicate_name = "player"
 
-    def __init__(self, id, r, c, goal, image, color):
+    def __init__(self, id, name, r, c, goal, pawn, hud, color):
         Predicate.__init__(self, [("id"), ("r"), ("c"), ("remaining_walls"), ("goal")])
         self.id = id 
+        self.name = name
         self.r = r
         self.c = c
         self.remaining_walls = 10
         self.walls = []
-        self.image = image
+        self.pawn = pawn
+        self.hud = hud
         self.color = color
         self.goal = goal
         self.done = False
