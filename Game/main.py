@@ -340,7 +340,7 @@ def main():
     pygame.font.init()
     pygame.mixer.init()
 
-    ost = [pygame.mixer.Sound(os.path.join("Assets", "Sounds", "laxity_again.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "giana_sisters.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "zerd_01.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "fairstars.mp3"))]
+    ost = [pygame.mixer.Sound(os.path.join("Assets", "Sounds", "checknobankh.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "laxity_again.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "giana_sisters.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "zerd_01.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "fairstars.mp3"))]
     shuffle(ost)
     victory = pygame.mixer.Sound(os.path.join("Assets", "Sounds", "victory.mp3"))
 

@@ -46,17 +46,6 @@ class AIManager():
             except Exception as e:
                 self._raise_exception(e)
 
-    
-    ''' 
-    TO BE OVERRIDDEN IN !!!YOUR!!! CHILD CLASS
-
-    players: list of Player objects, each one representing a player, with its own walls
-    asp_path: path to the ASP file
-    '''
-    def prepare_programs_for_turn(self, players, asp_path):
-        raise NotImplementedError("This method must be implemented in the child class")
-    
-
     ''' 
     TO BE OVERRIDDEN IN !!!YOUR!!! CHILD CLASS
     
