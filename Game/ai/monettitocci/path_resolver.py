@@ -52,43 +52,42 @@ class PathResolver():
                 walls.append(wall)
         return walls
 
-    # Dijkstra algorithm, which returns the minimum path from a cell to another
     def __dijkstra(self, initial_node, player_goal):
         rows, cols = 9, 9
 
-        #initial_node = (player.r,player.c)
-
-        ## Creazione di una matrice delle distanze con valori infiniti per tutti i nodi tranne il nodo di partenza
+        # Creazione di una matrice delle distanze con valori infiniti per tutti i nodi tranne il nodo di partenza
         distances = [[float('inf')] * cols for _ in range(rows)]
         distances[initial_node[0]][initial_node[1]] = 0
         
-        ## Coda di priorità per memorizzare i nodi da visitare
+        # Coda di priorità per memorizzare i nodi da visitare
         queue = [(0, initial_node)]
         
-        ## Dizionario per tenere traccia dei predecessori di ogni nodo
+        # Dizionario per tenere traccia dei predecessori di ogni nodo
         predecessors = {}
         
         while queue:
             current_dist, current_node = heapq.heappop(queue)
             
             if self.__is_goal(player_goal, current_node[0], current_node[1]):
-                ## Se il nodo corrente è quello di destinazione, restituisci il percorso trovato
+                # Se il nodo corrente è quello di destinazione, restituisci il percorso trovato
                 return self.__construct_path(predecessors, initial_node, current_node)
 
-            ## Scopri i vicini del nodo corrente
+            # Scopri i vicini del nodo corrente
             neighbors = self.__get_neighbors(current_node, rows, cols)
             
             for neighbor in neighbors:
                 row, col = neighbor
                 new_dist = current_dist + 1  ## Peso degli archi è 1
                 
+                # Se il nuovo percorso per raggiungere il vicino è più breve di quello attualmente conosciuto
                 if new_dist < distances[row][col]:
-                    ## Aggiorna la distanza minima per il vicino e il predecessore
+                    # Aggiorna la distanza minima per il vicino e il predecessore
                     distances[row][col] = new_dist
                     predecessors[neighbor] = current_node
+                    # Aggiungi il vicino alla coda di priorità con la nuova distanza
                     heapq.heappush(queue, (new_dist, neighbor))
         
-        ## Se non è stato trovato un percorso tra i nodi, restituisci None
+        # Se non è stato trovato un percorso tra i nodi, restituisci None
         return None
 
     def __get_neighbors(self,node,rows,cols):

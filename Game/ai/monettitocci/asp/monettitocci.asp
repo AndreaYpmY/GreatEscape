@@ -107,29 +107,27 @@ minPathCost(Cell1,Cost) :- reaches(Cell1,_,Cost), Cost = #min{K : reaches(Cell1,
 %% Non vorrei essere lontano dalla cella "obiettivo" più vicina
 %%% Pago tante quante sono le celle che, dopo la nuova mossa, mi separeranno dall'obiettivo
 :~ newPos(Cell), minDistance(ID,Cell,_,Cost), myId(ID). [Cost@2]                            % Se genero newPos
-:~ player(MyID,MyPos,_,_), thereIsANewWall, minPathCost(MyPos,Cost), myId(ID). [Cost@2]     % Se genero newWall
 
 %% Non vorrei che l'avversario sia vicino al suo obiettivo e contemporaneamente, non vorrei ostacolarmi più di tanto
 %%% Pago tanto quanto sarà la differenza tra quanto perdo io e quanto perde lui, se io perdo più di lui, pago di più
 :~ thereIsANewWall, myId(MyID), player(MyID,MyPos,_,_), player(OppID,OppPos,_,_), OppID<>MyID, minDistance(MyID,MyPos,_,MyCostWithoutWall), minDistance(OppID,OppPos,_,OppCostWithoutWall), minPathCost(MyPos,MyCostWithWall), minPathCost(OppPos,OppCostWithWall), MyCost=MyCostWithWall-MyCostWithoutWall, OppCost=OppCostWithWall-OppCostWithoutWall, TotalCost=(MyCost-OppCost)+(81*2). [TotalCost@3]
 
 %% Non vorrei che l'avversario sia a meno di 9* passi dal suo obiettivo e contemporaneamente mi siano rimasti muri (*si può cambiare questo valore più o meno aggressivo in attacco, in questo caso comincia ad attaccare)
-:~ newPos(Cell), myId(MyID), player(MyID,_,MyWallsLeft,_), player(OppID,OppPos,_,_), OppID<>MyID, minDistance(OppID,OppPos,_,OppCost), OppCost<6, MyWallsLeft>0. [1@4]
+:~ newPos(Cell), myId(MyID), player(MyID,_,MyWallsLeft,_), player(OppID,OppPos,_,_), OppID<>MyID, minDistance(OppID,OppPos,_,OppCost), OppCost<9, MyWallsLeft>0. [1@4]
 
 %% Non vorrei piazzare un muro se l'avversario ne ha molti più di me
 %%% Pago cifra fissa se la differenza di muri tra me ed il mio avversario è superiore a 3* (*si può cambiare questo valore per renderlo più difensivo in apertura o meno)
-:~ thereIsANewWall, player(MyID,_,MyWallsLeft,_), myId(MyID), player(OppID,_,OppWallsLeft,_), MyID<>OppID, Diff=OppWallsLeft-(MyWallsLeft-1), Diff>4. [1@5]
+:~ thereIsANewWall, player(MyID,_,MyWallsLeft,_), myId(MyID), player(OppID,_,OppWallsLeft,_), MyID<>OppID, Diff=OppWallsLeft-(MyWallsLeft-1), Diff>3. [1@5]
 
-%% Non vorrei spostarmi se l'avversario se l'avversario è molto più vicino di me (almeno 3 passi più vicino)
-%%% Pago se ho generato una newPos e la differenza tra il mio cammino minimo e quello dell'avversario è superiore a 3
-:~ newPos(Cell), myId(MyID), OppID<>MyID, player(MyID,MyPos,_,_), player(OppID,OppPos,_,_), minPathCost(MyPos,MyCost), minPathCost(OppPos,OppCost), Diff=MyCost-OppCost, Diff>2. [1@6]
+%% Non vorrei muovermi se il cammino minimo dell'avversario è più corto di 3 (È utile soprattutto quando l'avversario non piazza mai muri e quindi arriva molto velocemente verso l'obiettivo)
+:~ newPos(Cell), myId(MyID), OppID<>MyID, player(OppID,OppPos,_,_), minPathCost(OppPos,OppCost), OppCost<3. [1@7]
 
 %% Non vorrei piazzare assolutamente muri se l'avversario li ha terminati e sono meno distante di lui dall'obiettivo
 %%% Pago cifra fissa se l'avversario ha terminato i muri ed io risulto più vicino di lui (ancora prima di aver piazzato il muro, per questo uso minDistance)
-:~ thereIsANewWall, myId(MyID), player(MyID,MyPos,_,_), player(OppID,OppPos,0,_), MyID<>OppID, minDistance(MyID,MyPos,_,MyCost), minDistance(OppID,OppPos,_,OppCost), MyCost<OppCost. [1@7]
+:~ thereIsANewWall, myId(MyID), player(MyID,MyPos,_,_), player(OppID,OppPos,0,_), MyID<>OppID, minDistance(MyID,MyPos,_,MyCost), minDistance(OppID,OppPos,_,OppCost), MyCost<OppCost. [1@8]
 
 %% Non vorrei assolutamente piazzare muri se, dopo averlo fatto, l'avversario sarà sempre alla stessa distanza (utile quando l'avversario è entrato in un corridoio in cui non possono essere piazzati più muri)
-:~ thereIsANewWall, myId(MyID), OppID<>MyID, player(OppID,OppPos,_,_), minDistance(OppID,OppPos,_,OppCost), minPathCost(OppPos,OppCost). [1@8]
+:~ thereIsANewWall, myId(MyID), OppID<>MyID, player(OppID,OppPos,_,_), minDistance(OppID,OppPos,_,OppCost), minPathCost(OppPos,OppCost). [1@9]
 
 #show newPos/1.
 #show newWall/4.

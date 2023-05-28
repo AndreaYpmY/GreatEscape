@@ -14,7 +14,7 @@ class CallbackMonettiTocci(Callback):
     def callback(self,output):
         print("Elapsed time: " + str(time.time() - self.start_time)) 
         if time.time() - self.start_time > self.MAX_TURN_DURATION_SECONDS:
-            print("Callback timeout, random move will be played")
+            print("Callback timeout")
             return
         self._do_next_move(output)
 
