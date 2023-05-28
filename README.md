@@ -77,3 +77,5 @@ All credits for the music must go to:
 # In-game Screenshots
 
 Here are some in-game screenshots for you to see:
+![python_LiH5Nc7rTg](https://github.com/AndreaYpmY/GreatEscape/assets/85177113/167e7d4c-be7f-43e7-8b6b-d411e1d63091)
+![python_6Cm8uOjzYl](https://github.com/AndreaYpmY/GreatEscape/assets/85177113/31bc68eb-213d-46f6-9983-1cc42c76f1c6)
