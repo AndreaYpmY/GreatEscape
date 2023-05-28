@@ -1,6 +1,7 @@
-from ai_manager import AIManager
-from ai_manager_monettitocci import AIManagerMonettiTocci
-from ai_player import AIPlayer
+from ai.ai_manager import AIManager
+from ai.monettitocci.ai_manager_monettitocci import AIManagerMonettiTocci
+from ai.rasovillella.ai_manager_rasovillella import AIManagerRasoVillella
+from ai.ai_player import AIPlayer
 from player import Player
 from timekeeper import Timekeeper
 from wall import Wall
@@ -22,7 +23,8 @@ class Game:
         self.ai_managers_pool = []          # Pool of AI managers, every entry is a tuple (AIManager, PlayerName)
         
         # YOU MUST ADD YOUR AI MANAGER HERE (as written below)
-        #self.ai_managers_pool.append((AIManagerMonettiTocci(...params...), "MonettiTocci"))
+        self.ai_managers_pool.append((AIManagerMonettiTocci("./ai/monettitocci/asp/monettitocci.asp"), "monettitocci"))
+        self.ai_managers_pool.append((AIManagerRasoVillella("./ai/rasovillella/asp/ASP-RasoVillella.asp"), "rasovillella"))
 
         self.create_players(pawns)
         
@@ -31,21 +33,6 @@ class Game:
         # self.switch_player()  # Commented because it's called in main (game loop) after the countdown
         
         self.matrix = [[0 for i in range(9)] for j in range(9)]     # Board matrix
-
-        # TODO: MURI DI PROVA (DA RIMUOVERE GRZ)
-        '''
-        self.players[0].walls.append((Wall(3,4,1), Wall(4,4,1)))
-        self.players[0].walls.append((Wall(6,3,0), Wall(6,4,0)))
-        self.players[1].walls.append((Wall(2,2,0), Wall(2,3,0)))
-        self.players[1].walls.append((Wall(4,2,1), Wall(5,2,1)))
-        self.players[1].walls.append((Wall(6,4,1), Wall(7,4,1)))
-        self.players[1].walls.append((Wall(4,6,0), Wall(4,7,0)))
-        self.players[1].walls.append((Wall(2,7,0), Wall(2,8,0)))
-        self.players[1].walls.append((Wall(6,7,0), Wall(6,8,0)))
-        self.players[0].walls.append((Wall(1,5,0), Wall(1,6,0)))
-        self.players[0].walls.append((Wall(5,5,0), Wall(5,6,0)))
-        self.players[0].walls.append((Wall(7,7,1), Wall(8,7,1)))
-        '''
 
     def create_players(self,assets):
         goals = ['N', 'S', 'W', 'E']
@@ -135,7 +122,7 @@ class Game:
         return False
 
     def switch_player(self):
-        if self.turn > 1:
+        if self.turn > 0:
             self.__check_last_move_validity()
             if self.winner is not None:
                 return

@@ -7,6 +7,7 @@ from time import sleep
 import time
 from random import randint, shuffle
 import math
+import threading
 
 # Classes
 from game import Game
@@ -95,6 +96,8 @@ COUNTDOWN_1_IMAGE = pygame.image.load(os.path.join("Assets", "1.png"))
 COUNTDOWN_1 = pygame.transform.scale(COUNTDOWN_1_IMAGE, (300,300))
 
 assets = [(RED_PLAYER,RED_HUD,RED),(BLUE_PLAYER,BLUE_HUD,BLUE),(GREEN_PLAYER,GREEN_HUD,GREEN),(YELLOW_PLAYER,YELLOW_HUD,YELLOW)]
+ost = None
+audio_volume = 0
 
 overlapping_pawns = {
     "red_blue": RED_BLUE, "red_green": RED_GREEN, "red_yellow": RED_YELLOW, "green_blue": GREEN_BLUE, "yellow_blue": YELLOW_BLUE, "green_yellow": GREEN_YELLOW
@@ -107,8 +110,8 @@ def draw_window(game, game_started, timekeeper, big_text, medium_text, small_tex
     draw_players(game)
     draw_walls(game)
     
-    info_text = pygame.font.SysFont("Arial", 24)
-    hotkeys = info_text.render("m - mute audio     u - unmute audio    up - volume up      down - volume down", True, BLACK)
+    info_text = pygame.font.Font(os.path.join("Assets", "Fonts", "YanoneKaffeesatz-Regular.ttf"), 28)
+    hotkeys = info_text.render("M - mute audio     U - unmute audio    UP - volume up      DOWN - volume down", True, BLACK)
     WIN.blit(hotkeys, ((65, HEIGHT-15-hotkeys.get_height())))
 
     if not game_started:
@@ -126,8 +129,8 @@ def draw_window(game, game_started, timekeeper, big_text, medium_text, small_tex
     if game.winner is not None:
         winner_name = medium_text.render(f"{game.current_player.name}", True, game.current_player.color)
         winner_status = medium_text.render(f"won!", True, BLACK)
-        WIN.blit(winner_name, (WIDTH-450, HEIGHT//2-winner_name.get_height()))
-        WIN.blit(winner_status, (WIDTH-450, HEIGHT//2))
+        WIN.blit(winner_name, (WIDTH-475, HEIGHT//2-winner_name.get_height()))
+        WIN.blit(winner_status, (WIDTH-475, HEIGHT//2))
 
     pygame.display.update()
 
@@ -254,51 +257,6 @@ def draw_dashed_line(surf, color, start_pos, end_pos, width=5, dash_length=10):
         end = (round(x2), round(y2))
         pygame.draw.line(surf, color, start, end, width)
 
-'''
-# TODO: FUNZIONE DI PROVA (DA RIMUOVERE GRZ)
-def handle_play(game, keys_pressed):
-    player = game.current_player
-
-    is_movement = True
-    current_pos = (player.r, player.c)
-    next_pos = (player.r, player.c)
-    wall = ()
-
-    choose = input("Vuoi muoverti o piazzare un muro? (1/2)")
-    if choose == "1":
-        if(keys_pressed[pygame.K_UP]):
-            next_pos = (player.r-1, player.c)
-        elif(keys_pressed[pygame.K_DOWN]):
-            next_pos = (player.r+1, player.c)
-        elif(keys_pressed[pygame.K_LEFT]):
-            next_pos = (player.r, player.c-1)
-        elif(keys_pressed[pygame.K_RIGHT]):
-            next_pos = (player.r, player.c+1)
-    else:
-        muro = input("Vuoi inserire le coordinate o vuoi un muro random? (1/2)")
-        if(muro == "1"):
-            row = int(input("Row: "))
-            col = int(input("Col: "))
-            orientation = int(input("Orientation: "))
-            wall = player.generate_wall(row,col,orientation)
-        else:
-            wall = get_random_wall(player)
-        is_movement = False                 # I'm going to place a wall
-            
-
-
-    if is_movement:
-        if game.valid_movement(current_pos, next_pos):               # If no walls are traspassed
-            player.new_position(next_pos[0], next_pos[1])
-            game.switch_player()
-        else:
-            print(f"{game.current_player.id} è stato squalificato (mossa illegale)")
-    else:
-        if game.valid_wall(wall):
-            player.place_wall(wall)
-            game.switch_player()
-'''
-
 def get_random_wall(player):
     orientation = randint(0,1)  
     row = 0
@@ -326,31 +284,51 @@ def draw_old_positions(player,player_pos):
             pygame.draw.circle(WIN, player.color, (x,y), 5)
 
 def handle_volume_control(keys_pressed, ost):
-    volume = ost.get_volume()
+    global audio_volume
+
     if keys_pressed[pygame.K_UP]:
-        ost.set_volume(volume + 0.1)
+        audio_volume += 0.1 
     if keys_pressed[pygame.K_DOWN]:
-        ost.set_volume(volume - 0.1)
+        audio_volume -= 0.1
     if keys_pressed[pygame.K_m]:
-        ost.set_volume(0)
-    if keys_pressed[pygame.K_u] and volume == 0:
-        ost.set_volume(0.2)
+        audio_volume = 0
+    if keys_pressed[pygame.K_u] and audio_volume == 0:
+        audio_volume = 0.2
+
+    ost.set_volume(audio_volume)
+
+def load_song(file_path):
+    global ost
+    ost = pygame.mixer.Sound(file_path)
 
 def main():
     pygame.font.init()
     pygame.mixer.init()
 
-    ost = [pygame.mixer.Sound(os.path.join("Assets", "Sounds", "checknobankh.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "laxity_again.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "giana_sisters.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "zerd_01.mp3")), pygame.mixer.Sound(os.path.join("Assets", "Sounds", "fairstars.mp3"))]
-    shuffle(ost)
-    victory = pygame.mixer.Sound(os.path.join("Assets", "Sounds", "victory.mp3"))
+    song_paths = [
+        os.path.join("Assets", "Sounds", "checknobankh.mp3"),
+        os.path.join("Assets", "Sounds", "laxity_again.mp3"),
+        os.path.join("Assets", "Sounds", "giana_sisters.mp3"),
+        os.path.join("Assets", "Sounds", "zerd_01.mp3"),
+        os.path.join("Assets", "Sounds", "fairstars.mp3")
+    ]
 
-    ost[0].set_volume(0)        # Music starts muted
-    ost[0].play()
+    shuffle(song_paths)
+
+    thread = threading.Thread(target=load_song, args=(song_paths[0],))
+    thread.start()
+    thread.join()
+
+    global ost
+    ost.set_volume(audio_volume)
+    ost.play(-1)
+
+    victory = pygame.mixer.Sound(os.path.join("Assets", "Sounds", "victory.mp3"))
     
     try:
         big_text = pygame.font.Font(os.path.join("Assets", "Fonts", "Barrio-Regular.ttf"), 70)
         small_text = pygame.font.Font(os.path.join("Assets", "Fonts", "Barrio-Regular.ttf"), 40)
-        medium_text = pygame.font.Font(os.path.join("Assets", "Fonts", "Barrio-Regular.ttf"), 55)
+        medium_text = pygame.font.Font(os.path.join("Assets", "Fonts", "Barrio-Regular.ttf"), 50)
     except:
         raise Exception("Font file not found")
 
@@ -367,7 +345,7 @@ def main():
             
             keys_pressed = pygame.key.get_pressed()
             if (True in keys_pressed):
-                handle_volume_control(keys_pressed, ost[0])   
+                handle_volume_control(keys_pressed, ost)   
                 #handle_play(game, keys_pressed)
                 
         if game_started:
@@ -377,7 +355,6 @@ def main():
                 game.switch_player()
                 if game.turn > 1:
                     if game.winner is not None:
-                        # TODO: Implementare fine del gioco, con cambio di scenario
                         run = False
                         print(f"Winner: {game.winner}")    
         else:
@@ -393,10 +370,10 @@ def main():
     # Start the 5 seconds cooldown after the game ends
     timekeeper.start()
     run_cooldown = True
-    ost[0].stop()
+    ost.stop()
     victory.set_volume(0.2)
     victory.play()
-    while time.time() - timekeeper.get_start_time() < 5 and run_cooldown:      
+    while time.time() - timekeeper.get_start_time() < 10 and run_cooldown:      
         if event.type == pygame.QUIT:
             run_cooldown = False
         draw_window(game, game_started, timekeeper, big_text, medium_text, small_text)

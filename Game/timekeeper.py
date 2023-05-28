@@ -8,7 +8,7 @@ class Timekeeper:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.start_time = None
-            cls._instance.MAX_TURN_DURATION_SECONDS = 1 # TODO: Per adesso 1s, poi andrà cambiato in base al tempo che ci mette l'AI a generare la mossa
+            cls._instance.MAX_TURN_DURATION_SECONDS = 0.3  # 150 ms
 
         return cls._instance
 

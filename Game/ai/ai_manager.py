@@ -10,7 +10,7 @@ from time import sleep
 from player import Player
 from timekeeper import Timekeeper
 from wall import Wall
-from generic_callback import GenericCallback
+from .generic_callback import GenericCallback
 
 class AIManager():
     def __init__(self):
@@ -53,7 +53,7 @@ class AIManager():
 
     you can also choose to pass more parameters, if you need them
     '''
-    def ask_for_a_move(self,player):
+    def ask_for_a_move(self):
         raise NotImplementedError("This method must be implemented in the child class")
 
     def print_programs(self):
@@ -65,7 +65,7 @@ class AIManager():
         except Exception as e:
             self._raise_exception(e)
         
-
+    ''' This method initializes the ASP Handler (you can override it if you don't want to use DLV2) '''
     def _prepare_handler(self):
         self.os = platform.system()
 
