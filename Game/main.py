@@ -373,7 +373,7 @@ def main():
     ost.stop()
     victory.set_volume(0.2)
     victory.play()
-    while time.time() - timekeeper.get_start_time() < 10 and run_cooldown:      
+    while time.time() - timekeeper.get_start_time() < 5 and run_cooldown:      
         if event.type == pygame.QUIT:
             run_cooldown = False
         draw_window(game, game_started, timekeeper, big_text, medium_text, small_text)
