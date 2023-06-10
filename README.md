@@ -12,7 +12,7 @@ To make the bot play the game, you also need the game itself: that’s why we al
 
 # Technical info
 
-The game is written in **Python** and uses the [**Pygame](https://www.pygame.org/)** library.
+The game is written in **Python** and uses the [**Pygame**](https://www.pygame.org/) library.
 
 Since the project is evaluated solely on how smart the AI is, don’t expect the rest of the code to be well-designed. 
 
@@ -70,12 +70,13 @@ All credits for the music must go to:
 
 - **skuter** for [.giana sisters.](https://modarchive.org/index.php?request=view_by_moduleid&query=57367)
 - **laxity** for [laxity again](https://modarchive.org/index.php?request=view_by_moduleid&query=85532)
-- **************laxity************** and ****************kefrens**************** for [checknobankh](https://demozoo.org/music/67817/) (*[desert dream demo](https://youtu.be/jziQBWQxvok?t=274)*)
+- **************laxity************** for [checknobankh](https://demozoo.org/music/67817/) (*[desert dream demo](https://youtu.be/jziQBWQxvok?t=274)*)
 - **Johannes Bjerregaard** and **Thomas Mogensen** for [Tiger Mission Hi-score](https://modarchive.org/index.php?request=view_by_moduleid&query=141569) (*fairstars*)
 - **Renard** for [untitled](https://modarchive.org/index.php?request=view_by_moduleid&query=179148) (*zerd_01*)
 
 # In-game Screenshots
 
 Here are some in-game screenshots for you to see:
-![python_LiH5Nc7rTg](https://github.com/AndreaYpmY/GreatEscape/assets/85177113/167e7d4c-be7f-43e7-8b6b-d411e1d63091)
-![python_6Cm8uOjzYl](https://github.com/AndreaYpmY/GreatEscape/assets/85177113/31bc68eb-213d-46f6-9983-1cc42c76f1c6)
+![python_KWaGIgQiBk](https://github.com/AndreaYpmY/GreatEscape/assets/85177113/55d4e26f-b5ea-4ee2-bd54-d2a76cb23812)
+![python_zV6BIHmFW0](https://github.com/AndreaYpmY/GreatEscape/assets/85177113/dd96c759-60df-4790-b75e-d326077852f0)
+
