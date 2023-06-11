@@ -69,8 +69,7 @@ Many thanks to Angelo Fittipaldi ([@imbngy](https://github.com/imbngy)), who mad
 All credits for the music must go to:
 
 - **skuter** for [.giana sisters.](https://modarchive.org/index.php?request=view_by_moduleid&query=57367)
-- **laxity** for [laxity again](https://modarchive.org/index.php?request=view_by_moduleid&query=85532)
-- **************laxity************** for [checknobankh](https://demozoo.org/music/67817/) (*[desert dream demo](https://youtu.be/jziQBWQxvok?t=274)*)
+- **laxity** for [laxity again](https://modarchive.org/index.php?request=view_by_moduleid&query=85532) and [checknobankh](https://demozoo.org/music/67817/) (*[desert dream demo](https://youtu.be/jziQBWQxvok?t=274)*)
 - **Johannes Bjerregaard** and **Thomas Mogensen** for [Tiger Mission Hi-score](https://modarchive.org/index.php?request=view_by_moduleid&query=141569) (*fairstars*)
 - **Renard** for [untitled](https://modarchive.org/index.php?request=view_by_moduleid&query=179148) (*zerd_01*)
 
