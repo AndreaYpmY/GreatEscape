@@ -27,7 +27,7 @@ class CallbackRasoVillella(Callback):
                     if atom.startswith("muovi"):
                         new_pos = self.__parse_new_pos(atom)
                         self.player.new_position(new_pos[0],new_pos[1])
-                    elif atom.startswith("newWall"):
+                    elif atom.startswith("scegliMuro"):
                         new_wall = self.__parse_new_wall(atom)
                         self.player.place_wall(new_wall)
                     else:
@@ -41,5 +41,5 @@ class CallbackRasoVillella(Callback):
         
 
     def __parse_new_wall(self, atom):
-        # newWall(cell(R1,C1),cell(R2,C2),cell(R3,C3),cell(R4,C4))
+        # scegliMuro(R1,C1,R2,C2,R3,C3,R4,C4)
         return (Wall((int(atom[11]),int(atom[13])), (int(atom[15]),int(atom[17]))), Wall((int(atom[19]),int(atom[21])), (int(atom[23]),int(atom[25]))))

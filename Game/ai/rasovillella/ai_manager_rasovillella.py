@@ -10,6 +10,7 @@ from .path_resolver import PathResolver
 from .path import Path
 
 import sys
+import platform
 sys.path.append("..\\..")
 from player import Player
 from wall import Wall
@@ -26,6 +27,17 @@ class AIManagerRasoVillella(AIManager):
         ASPMapper.get_instance().register_class(Player)
         ASPMapper.get_instance().register_class(Wall)
         ASPMapper.get_instance().register_class(Path)
+
+    def _prepare_handler(self):
+        self.os = platform.system()
+
+        if self.os == "Windows":    # Windows
+            self.handler = DesktopHandler(ClingoDesktopService("executables\clingo.exe")) 
+        elif self.os == "Linux":    # Linux
+            self.handler = DesktopHandler(ClingoDesktopService("executables/./clingo"))
+        else:
+            raise Exception("OS not supported")
+    
         
 
     def prepare_programs_for_turn(self, players):

@@ -8,7 +8,7 @@ class Timekeeper:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.start_time = None
-            cls._instance.MAX_TURN_DURATION_SECONDS = 0.3  # 150 ms
+            cls._instance.MAX_TURN_DURATION_SECONDS = 1  # 150 ms
 
         return cls._instance
 
